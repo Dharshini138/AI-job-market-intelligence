@@ -8,6 +8,27 @@ from collections import Counter
 import plotly.express as px
 
 st.set_page_config(page_title="AI Job Market Intelligence", layout="wide")
+st.markdown("## AI Market Insights")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric(
+        label="Total Jobs",
+        value=len(df)
+    )
+
+with col2:
+    st.metric(
+        label="Top Hiring Location",
+        value=df["location"].value_counts().idxmax()
+    )
+
+with col3:
+    st.metric(
+        label="Most In Demand Skill",
+        value=max(skill_counts, key=skill_counts.get)
+    )
 
 
 st.title("🚀 AI Job Market Intelligence Platform")
