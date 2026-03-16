@@ -297,3 +297,49 @@ st.info(
     f"AI Insight: The job market currently shows strong demand for **{top_skill}** skills. "
     f"The highest hiring activity is observed in **{top_location}**."
 )
+# -----------------------
+# AI Career Recommendation System
+# -----------------------
+
+st.header("🤖 AI Career Recommendation")
+
+user_skills = st.text_input(
+    "Enter your skills (comma separated)",
+    "python, machine learning"
+)
+
+if st.button("Get Career Recommendation"):
+
+    user_skill_list = [s.strip().lower() for s in user_skills.split(",")]
+
+    job_scores = {}
+
+    for _, row in df.iterrows():
+
+        job_skills = str(row["skills"]).lower()
+
+        score = sum(skill in job_skills for skill in user_skill_list)
+
+        if score > 0:
+            job_title = row["title"]
+
+            if job_title not in job_scores:
+                job_scores[job_title] = score
+            else:
+                job_scores[job_title] += score
+
+    if job_scores:
+
+        recommended_jobs = sorted(
+            job_scores.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )[:5]
+
+        st.subheader("🎯 Recommended Career Paths")
+
+        for job, score in recommended_jobs:
+            st.success(f"{job}")
+
+    else:
+        st.warning("No matching jobs found. Try adding more skills.")
