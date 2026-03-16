@@ -301,6 +301,10 @@ st.info(
 # AI Career Recommendation System
 # -----------------------
 
+# -----------------------
+# AI Career Recommendation
+# -----------------------
+
 st.header("🤖 AI Career Recommendation")
 
 user_skills = st.text_input(
@@ -321,7 +325,8 @@ if st.button("Get Career Recommendation"):
         score = sum(skill in job_skills for skill in user_skill_list)
 
         if score > 0:
-            job_title = row["title"]
+
+            job_title = row["job_title"]
 
             if job_title not in job_scores:
                 job_scores[job_title] = score
@@ -339,7 +344,63 @@ if st.button("Get Career Recommendation"):
         st.subheader("🎯 Recommended Career Paths")
 
         for job, score in recommended_jobs:
+            st.success(job)
+
+    else:
+        st.warning("No matching jobs found. Try adding more skills.")
+
+        for job, score in recommended_jobs:
             st.success(f"{job}")
 
     else:
         st.warning("No matching jobs found. Try adding more skills.")
+      # -----------------------
+# AI Skill Gap Analyzer
+# -----------------------
+
+st.header("🧠 AI Skill Gap Analyzer")
+
+# Select job role
+selected_job = st.selectbox(
+    "Select a Job Role",
+    df["job_title"].dropna().unique()
+)
+
+# User skills input
+user_skills = st.text_input(
+    "Enter your current skills (comma separated)",
+    "python, data analysis"
+)
+
+if st.button("Analyze Skill Gap"):
+
+    user_skill_list = [s.strip().lower() for s in user_skills.split(",")]
+
+    job_data = df[df["job_title"] == selected_job]
+
+    skills_series = job_data["skills"].dropna().astype(str)
+
+    skills_series = skills_series.str.replace("[","",regex=False)\
+                                 .str.replace("]","",regex=False)\
+                                 .str.replace("'","",regex=False)
+
+    skills_list = ",".join(skills_series).lower().split(",")
+
+    skill_counts = Counter(skills_list)
+
+    top_required_skills = list(dict(skill_counts.most_common(10)).keys())
+
+    missing_skills = [s for s in top_required_skills if s not in user_skill_list]
+
+    st.subheader("📊 Skill Analysis")
+
+    st.write("✅ Your Skills:", user_skill_list)
+
+    st.write("🎯 Top Skills Required for this Job:", top_required_skills)
+
+    if missing_skills:
+        st.warning("⚠ Skills You Should Learn:")
+        for skill in missing_skills:
+            st.write(f"- {skill}")
+    else:
+        st.success("🎉 You already have most of the required skills!")
