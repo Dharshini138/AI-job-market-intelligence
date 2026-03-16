@@ -50,6 +50,7 @@ Seaborn
 Plotly
 
 📁 Project Structure
+
 job-market-intelligence
 │
 ├── src
@@ -58,6 +59,7 @@ job-market-intelligence
 ├── jobs.csv
 ├── requirements.txt
 └── README.md
+
 ▶ How to Run the Project
 1️⃣ Install dependencies
 pip install -r requirements.txt
@@ -66,7 +68,6 @@ streamlit run src/app.py
 3️⃣ Open in browser
 http://localhost:8501
 🎯 Project Goal
-
 The goal of this project is to demonstrate how data analytics and machine learning can be used to extract valuable insights from job market data and support career and hiring decisions.
 
 📌 Future Improvements
