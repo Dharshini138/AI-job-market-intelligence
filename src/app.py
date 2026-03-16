@@ -8,28 +8,6 @@ from collections import Counter
 import plotly.express as px
 
 st.set_page_config(page_title="AI Job Market Intelligence", layout="wide")
-st.markdown("## AI Market Insights")
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric(
-        label="Total Jobs",
-        value=len(df)
-    )
-
-with col2:
-    st.metric(
-        label="Top Hiring Location",
-        value=df["location"].value_counts().idxmax()
-    )
-
-with col3:
-    st.metric(
-        label="Most In Demand Skill",
-        value=max(skill_counts, key=skill_counts.get)
-    )
-
 
 st.title("🚀 AI Job Market Intelligence Platform")
 st.markdown("### Real-time analytics for AI jobs, salaries and skills")
@@ -38,6 +16,35 @@ st.markdown("### Real-time analytics for AI jobs, salaries and skills")
 # Load Dataset
 # -----------------------
 df = pd.read_csv("jobs.csv")
+
+# -----------------------
+# Skill Processing (needed for insights)
+# -----------------------
+skills_series = df["skills"].dropna().astype(str)
+
+skills_series = skills_series.str.replace("[","",regex=False)\
+                               .str.replace("]","",regex=False)\
+                               .str.replace("'","",regex=False)
+
+skills_list = ",".join(skills_series).split(",")
+
+skill_counts = Counter(skills_list)
+
+# -----------------------
+# AI Market Insights
+# -----------------------
+st.markdown("## AI Market Insights")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric("Total Jobs", len(df))
+
+with col2:
+    st.metric("Top Hiring Location", df["location"].value_counts().idxmax())
+
+with col3:
+    st.metric("Most In Demand Skill", max(skill_counts, key=skill_counts.get))
 
 # -----------------------
 # Salary Processing
@@ -122,16 +129,6 @@ st.markdown("---")
 # -----------------------
 st.header("Top Skills in Demand")
 
-skills_series = df["skills"].dropna().astype(str)
-
-skills_series = skills_series.str.replace("[","",regex=False)\
-                             .str.replace("]","",regex=False)\
-                             .str.replace("'","",regex=False)
-
-skills_list = ",".join(skills_series).split(",")
-
-skill_counts = Counter(skills_list)
-
 top_skills = dict(skill_counts.most_common(10))
 
 st.bar_chart(top_skills)
@@ -141,19 +138,23 @@ st.bar_chart(top_skills)
 # -----------------------
 st.header("Salary Distribution")
 
-fig, ax = plt.subplots()
-
-sns.histplot(filtered_df["avg_salary"].dropna(), bins=30)
-
-st.pyplot(fig)
 if not filtered_df["avg_salary"].dropna().empty:
+
+    fig, ax = plt.subplots()
+
     sns.histplot(filtered_df["avg_salary"].dropna(), bins=30)
+
     st.pyplot(fig)
+
 else:
     st.warning("No salary data available for selected filters")
-    st.header("Salary Trend Analysis")
 
-salary_trend = df.groupby("location")["avg_salary"].mean().sort_values(ascending=False).head(10)
+# -----------------------
+# Salary Trend Analysis
+# -----------------------
+st.header("Salary Trend Analysis")
+
+salary_trend = df.groupby("location")["avg_salary"].mean().dropna().sort_values(ascending=False).head(10)
 
 fig_trend = px.line(
     salary_trend,
@@ -179,9 +180,13 @@ st.header("Industry Job Demand")
 industry_counts = filtered_df["industry"].value_counts().head(10)
 
 if len(industry_counts) > 0:
+
     fig2, ax2 = plt.subplots()
+
     industry_counts.plot(kind="bar", ax=ax2, color="skyblue")
+
     st.pyplot(fig2)
+
 else:
     st.warning("No data available for the selected filters")
 
@@ -193,6 +198,7 @@ st.header("Global Job Demand Map")
 location_counts = df["location"].value_counts().head(20)
 
 map_df = location_counts.reset_index()
+
 map_df.columns = ["location","jobs"]
 
 fig_map = px.bar(
@@ -210,6 +216,7 @@ st.plotly_chart(fig_map)
 st.header("Dataset Preview")
 
 st.dataframe(filtered_df.head(100))
+
 st.markdown("---")
 
 # -----------------------
@@ -224,23 +231,23 @@ industry_choice = st.selectbox(
 
 industry_data = df[df["industry"] == industry_choice]
 
-skills_series = industry_data["skills"].dropna().astype(str)
+skills_series2 = industry_data["skills"].dropna().astype(str)
 
-skills_series = skills_series.str.replace("[","",regex=False)\
-                             .str.replace("]","",regex=False)\
-                             .str.replace("'","",regex=False)
+skills_series2 = skills_series2.str.replace("[","",regex=False)\
+                               .str.replace("]","",regex=False)\
+                               .str.replace("'","",regex=False)
 
-skills_list = ",".join(skills_series).split(",")
+skills_list2 = ",".join(skills_series2).split(",")
 
-skill_counts = Counter(skills_list)
+skill_counts2 = Counter(skills_list2)
 
-top_skills = dict(skill_counts.most_common(10))
+top_skills2 = dict(skill_counts2.most_common(10))
 
 fig3 = px.bar(
-    x=list(top_skills.keys()),
-    y=list(top_skills.values()),
+    x=list(top_skills2.keys()),
+    y=list(top_skills2.values()),
     title="Recommended Skills for This Industry",
-    color=list(top_skills.values()),
+    color=list(top_skills2.values()),
     color_continuous_scale="viridis"
 )
 
@@ -251,13 +258,13 @@ st.plotly_chart(fig3)
 # -----------------------
 st.header("📈 Salary Trend Visualization")
 
-salary_trend = df.groupby("industry")["avg_salary"].mean().dropna()
+salary_trend2 = df.groupby("industry")["avg_salary"].mean().dropna()
 
 fig4 = px.bar(
-    x=salary_trend.index,
-    y=salary_trend.values,
+    x=salary_trend2.index,
+    y=salary_trend2.values,
     title="Average Salary by Industry",
-    color=salary_trend.values,
+    color=salary_trend2.values,
     color_continuous_scale="plasma"
 )
 
@@ -277,6 +284,10 @@ fig5 = px.pie(
 )
 
 st.plotly_chart(fig5)
+
+# -----------------------
+# Final AI Insight
+# -----------------------
 st.header("AI Job Market Insight")
 
 top_skill = max(skill_counts, key=skill_counts.get)
