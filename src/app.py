@@ -352,8 +352,6 @@ if st.button("Get Career Recommendation"):
         for job, score in recommended_jobs:
             st.success(f"{job}")
 
-    else:
-        st.warning("No matching jobs found. Try adding more skills.")
       # -----------------------
 # AI Skill Gap Analyzer
 # -----------------------
