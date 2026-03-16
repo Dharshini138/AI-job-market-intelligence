@@ -277,3 +277,12 @@ fig5 = px.pie(
 )
 
 st.plotly_chart(fig5)
+st.header("AI Job Market Insight")
+
+top_skill = max(skill_counts, key=skill_counts.get)
+top_location = df["location"].value_counts().idxmax()
+
+st.info(
+    f"AI Insight: The job market currently shows strong demand for **{top_skill}** skills. "
+    f"The highest hiring activity is observed in **{top_location}**."
+)
