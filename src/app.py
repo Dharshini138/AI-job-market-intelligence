@@ -404,3 +404,47 @@ if st.button("Analyze Skill Gap"):
             st.write(f"- {skill}")
     else:
         st.success("🎉 You already have most of the required skills!")
+      # -----------------------
+# AI Job Market Assistant
+# -----------------------
+
+st.header("🤖 AI Job Market Assistant")
+
+question = st.text_input(
+    "Ask a question about the job market",
+    "Which skills are most in demand?"
+)
+
+if st.button("Ask AI"):
+
+    q = question.lower()
+
+    if "skill" in q:
+
+        top_skills = dict(skill_counts.most_common(5))
+
+        st.success("Top Skills in Demand:")
+        for skill, count in top_skills.items():
+            st.write(f"{skill} ({count} jobs)")
+
+    elif "location" in q:
+
+        top_location = df["location"].value_counts().idxmax()
+
+        st.success(f"Highest Hiring Location: {top_location}")
+
+    elif "salary" in q:
+
+        avg_salary = int(df["avg_salary"].mean())
+
+        st.success(f"Average Salary in Dataset: €{avg_salary}")
+
+    elif "industry" in q:
+
+        top_industry = df["industry"].value_counts().idxmax()
+
+        st.success(f"Most Active Industry: {top_industry}")
+
+    else:
+
+        st.info("Try asking about skills, salary, location, or industry.")
