@@ -151,6 +151,16 @@ if not filtered_df["avg_salary"].dropna().empty:
     st.pyplot(fig)
 else:
     st.warning("No salary data available for selected filters")
+    st.header("Salary Trend Analysis")
+
+salary_trend = df.groupby("location")["avg_salary"].mean().sort_values(ascending=False).head(10)
+
+fig_trend = px.line(
+    salary_trend,
+    title="Average Salary Trend by Location",
+)
+
+st.plotly_chart(fig_trend)
 
 # -----------------------
 # Top Hiring Companies
